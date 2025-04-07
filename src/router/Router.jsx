@@ -1,16 +1,23 @@
 import { createBrowserRouter } from 'react-router-dom'
-import MainPage from '../ui/pages/MainPage'
 import MainLayout from '../ui/layouts/MainLayout'
+import Login from '../components/login/Login'
 
 
 const routes = [
   {
     path: '/',
     element: <MainLayout />,
-    loader: () => '메인 페이지',
+    loader: () => '로또',
+    children: [
+      {
+        path: '',
+        element: <Login />,
+        loader: () => '로또',
+      },
+    ],
   },
-]
+];
 
-const router = createBrowserRouter(routes)
+const router = createBrowserRouter(routes);
 
-export { router, routes }
+export { router, routes };
