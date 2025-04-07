@@ -8,12 +8,12 @@ const routes = [
   {
     path: '/',
     element: <MainLayout />,
-    loader: () => '로또',
+    loader: () => '메인 레이아웃',
     children: [
       {
         path: '',
         element: <Products />,
-        loader: () => '로또',
+        loader: () => '상품들',
       },
     ],
   },
