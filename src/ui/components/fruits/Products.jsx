@@ -1,9 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getPCategories } from '../../../api/categoryApi';
 
 const Products = () => {
+  const [categories, setCategories] = useState([]);
+
+
+  useEffect(() => {
+    getPCategories()
+      .then((res) => {
+        console.log(res.data)
+        setCategories(res.data)
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   return (
-   
-<>
+  <>
   {/* Fruits Shop Start*/}
   <div className="container-fluid fruite py-5">
     <div className="container py-5">
