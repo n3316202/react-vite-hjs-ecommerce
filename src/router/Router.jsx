@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import MainLayout from '../ui/layouts/MainLayout'
-import Login from '../components/login/Login'
+import Login from '@/ui/components/login/Login'
+import Products from '../ui/components/fruits/Products';
 
 
 const routes = [
@@ -11,7 +12,7 @@ const routes = [
     children: [
       {
         path: '',
-        element: <Login />,
+        element: <Products />,
         loader: () => '로또',
       },
     ],

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import Footer from '../../components/Footer'
-import Header from '../../components/Header';
+import Footer from '@/ui/components/Footer'
+import Header from '@/ui/components/Header';
 
 import '/src/assets/fruits/lib/lightbox/css/lightbox.min.css'
 import '/src/assets/fruits/lib/owlcarousel/assets/owl.carousel.min.css'
