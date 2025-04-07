@@ -1,9 +1,10 @@
 import http from './HttpCommon';
 
-export const getPosts = () => {
-  return http.get('/posts');
+//http://127.0.0.1:8000/api/categories/
+export const getPCategories = () => {
+  return http.get('/api/categories');
 };
 
-export const getPostById = (id) => {
-  return http.get(`/posts/${id}`);
+export const getCategoryById = (id) => {
+  return http.get(`/api/categories/${id}`);
 };
