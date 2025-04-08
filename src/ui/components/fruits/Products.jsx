@@ -157,7 +157,7 @@ const Products = () => {
                           Lorem ipsum dolor sit amet consectetur adipisicing
                           elit sed do eiusmod te incididunt
                         </p>
-                        <div className="d-flex justify-content-between flex-lg-wrap">
+                        <div className="d-flex flex-column justify-content-center align-items-center flex-lg-wrap">
                           <p className="text-dark fs-5 fw-bold mb-0">
                             $4.99 / kg
                           </p>
