@@ -1,10 +1,13 @@
 import axios from 'axios';
 
+const accessToken = localStorage.getItem("access"); // ✅ localStorage에서 토큰 꺼내기
+
 //dev_04
 const http = axios.create({
   baseURL: "http://127.0.0.1:8000", //import.meta.env.VITE_REQUEST_URL,
+  withCredentials: true, // ✅ 세션 쿠키도 같이 보냄
   headers: {
-    'Content-type': 'application/json',
+    Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
   },
 });
 
@@ -21,129 +24,115 @@ axios의 interceptor를 사용하면 요청이나 응답을 가로채서 처리�
 아래는 axios의 interceptor를 사용한 코드이다.
 */
 
-// [요청 설정] 모든 요청의 헤더에 토큰 넣어 보내기
-// http.interceptors.request.use(
-//   async (config) => {
-//     //console.log('http.interceptors.request.use::');
-//     //console.log(config);
-//     try {
-//       let accessToken = localStorage.getItem('accessToken');
-
-//       if (accessToken == null) {
-//         return config;
-//       }
-
-//       //refresh token 만료 체크
-//       const refreshToken = localStorage.getItem('refreshToken');
-//       const refresh = jwtDecode(refreshToken);
-//       const isRefreshExpired = dayjs.unix(refresh.exp).diff(dayjs()) < 1; // 토큰만료 상태 체크
-
-//       if (isRefreshExpired) {
-//         //로그아웃은 클라이언트 토큰만 삭제 하면 됨
-//         console.log('refreshToken 만료');
-//         localStorage.removeItem('accessToken');
-//         localStorage.removeItem('refreshToken');
-//         return config;
-//       }
-
-//       //토큰 만료 상태 체크
-//       const user = jwtDecode(accessToken);
-//       const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1; // 토큰만료 상태 체크
-
-//       if (isExpired) {
-//         accessToken = await reIssuedToken();
-//       }
-
-//       //console.log("accessToken:", accessToken);
-//       console.log(`JWT ${accessToken}`);
-
-//       config.headers.Authorization = `JWT ${accessToken}`;
-//     } catch (error) {
-//       console.log('요청에러');
-//       console.log(error);
-//     }
-
-//     return config;
-//   },
-//   (error) => {
-//     console.log('리퀘스트 에러');
-//     console.log(error);
-//     return Promise.reject(error);
-//   },
-// );
-
-// const reIssuedToken = async () => {
-//   console.log('토큰 재발급 요청');
-
-//   try {
-//     const refreshToken = localStorage.getItem('refreshToken');
-//     const response = await axios.post(import.meta.env.VITE_REQUEST_URL + '/auth/token/refresh/', {
-//       refresh: refreshToken,
-//     });
-//     //console.log(response);
-//     console.log('토큰 갱신');
-//     localStorage.clear();
-//     localStorage.setItem('accessToken', response.data.access);
-//     //localStorage.setItem('refreshToken', response.data.refresh); //djouser의 경우 refreshToken은 그대로 사용
-
-//     return response.data.access;
-//   } catch (e) {
-//     console.log(e);
-//   }
-
-//   return null;
-// };
-
-// [요청 설정] 모든 요청의 헤더에 토큰 넣어 보내기
+// 요청 인터셉터 – 요청마다 access token 넣기
 http.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (accessToken) {
-      config.headers.Authorization = `JWT ${accessToken}`;
+    const access = localStorage.getItem("access");
+    if (access) {
+      config.headers["Authorization"] = `Bearer ${access}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error)
 );
 
-// [응답 설정]
+// 응답 인터셉터 – access token 만료 시 자동으로 refresh 요청
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // If the error status is 401 and there is no originalRequest._retry flag,
-    // it means the token has expired and we need to refresh it
-    if (error.response.status === 401 && !originalRequest._retry) {
+// access 토큰 만료 및 재시도하지 않은 경우
+//🧩 1. error.response?.status === 401
+//설명: axios 요청이 실패했을 때 서버가 401 Unauthorized 상태 코드를 응답했는지 확인하는 조건
+//이건 일반적으로 access token이 만료되었거나, 인증 정보가 누락되었을 때 발생
+//토큰이 만료된 경우
+//토큰이 없거나 잘못된 경우
+//🧩 2. !originalRequest._retry
+//설명: axios는 실패한 요청 객체(originalRequest)를 그대로 다시 보내서 재시도 할 수 있음.
+//근데 이걸 한 번만 재시도하게 하기 위해 _retry라는 커스텀 플래그.
+//!originalRequest._retry는 → originalRequest._retry가 아직 true가 아니라는 뜻. 
+// 즉, 이 요청은 아직 재시도하지 않았다는 의미.
+//만약 _retry가 true면 → 이미 refresh 해서 다시 보낸 요청이라는 뜻이므로 무한 루프를 막기 위해 다시 안 보냄.
+//결론
+//"서버가 401을 반환했고, 이 요청은 아직 재시도되지 않았다면, 토큰을 갱신하고 다시 요청해라!"
+
+  if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post(import.meta.env.VITE_REQUEST_URL + '/auth/token/refresh/', {
-          refresh: refreshToken,
+        const refresh = localStorage.getItem("refresh");
+        const res = await axios.post("http://127.0.0.1:8000/api/auth/jwt/refresh/", {
+          refresh: refresh,
         });
-        console.log('토큰 갱신');
-        localStorage.setItem('accessToken', response.data.access);
-        //localStorage.setItem('refreshToken', response.data.refresh); //djouser의 경우 refreshToken은 오지 않음음
 
-        // Retry the original request with the new token
-        originalRequest.headers.Authorization = `JWT ${response.data.access}`;
-        return axios(originalRequest);
-      } catch (error) {
-        //refresh 토큰 마저 유효하지 않다는 의미
-        // Handle refresh token error or redirect to login
-        console.log(error);
-        //refresh
-        localStorage.clear();
-        //router.push('/login');
+        const newAccess = res.data.access;
+        localStorage.setItem("access", newAccess);
+
+        // Authorization 헤더 업데이트 후 원래 요청 다시 시도
+        originalRequest.headers["Authorization"] = `Bearer ${newAccess}`;
+        return http(originalRequest);
+      } catch (refreshError) {
+        console.error("🔒 토큰 갱신 실패", refreshError);
+        // 실패하면 로그인 상태 초기화 로직 추가 가능
       }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
+
+
+// [요청 설정] 모든 요청의 헤더에 토큰 넣어 보내기
+// http.interceptors.request.use(
+//   (config) => {
+//     const accessToken = localStorage.getItem('accessToken');
+
+//     if (accessToken) {
+//       config.headers.Authorization = `JWT ${accessToken}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   },
+// );
+
+// // [응답 설정]
+// http.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
+
+//     // If the error status is 401 and there is no originalRequest._retry flag,
+//     // it means the token has expired and we need to refresh it
+//     if (error.response.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
+
+//       try {
+//         const refreshToken = localStorage.getItem('refreshToken');
+//         const response = await axios.post(import.meta.env.VITE_REQUEST_URL + '/auth/token/refresh/', {
+//           refresh: refreshToken,
+//         });
+//         console.log('토큰 갱신');
+//         localStorage.setItem('accessToken', response.data.access);
+//         //localStorage.setItem('refreshToken', response.data.refresh); //djouser의 경우 refreshToken은 오지 않음음
+
+//         // Retry the original request with the new token
+//         originalRequest.headers.Authorization = `JWT ${response.data.access}`;
+//         return axios(originalRequest);
+//       } catch (error) {
+//         //refresh 토큰 마저 유효하지 않다는 의미
+//         // Handle refresh token error or redirect to login
+//         console.log(error);
+//         //refresh
+//         localStorage.clear();
+//         //router.push('/login');
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   },
+// );
 
 export default http;

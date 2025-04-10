@@ -3,6 +3,7 @@ import MainLayout from '../ui/layouts/MainLayout'
 import Products from '../ui/components/fruits/Products';
 import Cart from '../ui/components/fruits/Cart';
 import Hero from '../ui/components/Hero';
+import Login from '../ui/components/login/Login';
 
 
 const routes = [
@@ -20,6 +21,11 @@ const routes = [
         path: 'cart', // /cart => Cart
         element: <Cart />,
         loader: () => '카트',
+      },
+      {
+        path: 'login', // /cart => Cart
+        element: <div><Hero/><Login /></div>,
+        loader: () => '로그인',
       },
     ],
   },

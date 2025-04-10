@@ -1,12 +1,17 @@
 import React from 'react'
 import { useCart } from '../../contexts/CartContext';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = () => {
 
   const  { cartItems } = useCart();
   console.log("로그")
   console.log(cartItems)
+
+  const {user} = useAuth();
+  console.log("유저")
+  console.log(user)
 
   return (
     <>
@@ -32,7 +37,7 @@ const Navbar = () => {
               <small className="me-3">
                 <i className="fas fa-envelope me-2 text-secondary" />
                 <a href="#" className="text-white">
-                  Email@Example.com
+                {user ? `${user.username}님 환영합니다.` : '로그인을 해주세요'}
                 </a>
               </small>
             </div>
@@ -108,15 +113,15 @@ const Navbar = () => {
                 >
                   <i className="fas fa-search text-primary" />
                 </button>
-                <a href="#" className="position-relative me-4 my-auto">
+                <Link to="/cart" className="position-relative me-4 my-auto">
                   <i className="fa fa-shopping-bag fa-2x" />
                   <span
                     className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                     style={{ top: "-5px", left: 15, height: 20, minWidth: 20 }}
                   >
-                    {/* {getTotalQuantity} */}
+                    {cartItems ? cartItems.cart_total_items : 0}
                   </span>
-                </a>
+                </Link>
                 <a href="#" className="my-auto">
                   <i className="fas fa-user fa-2x" />
                 </a>

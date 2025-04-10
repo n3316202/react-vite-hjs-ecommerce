@@ -1,7 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '/src/assets/login/css/login.css';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await login(email, password);
+      alert("✅ 로그인 성공!");
+      navigate("/"); // 로그인 성공 후 루트로 이동
+    } catch (error) {
+      alert("❌ 로그인 실패: " + error.message);
+    }
+  };
+
   return (
     <div className="form-bg">
         <div className="container">
@@ -19,6 +38,8 @@ const Login = () => {
                             className="form-control"
                             type="email"
                             placeholder="email address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         </div>
                         <div className="form-group">
@@ -27,9 +48,11 @@ const Login = () => {
                             className="form-control"
                             type="password"
                             placeholder="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         </div>
-                        <button type="button" className="btn btn-default">
+                        <button type="button" className="btn btn-default" onClick={handleLogin}>
                         Login
                         </button>
                     </form>
