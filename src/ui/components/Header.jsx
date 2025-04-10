@@ -1,8 +1,12 @@
 import React from 'react'
 import heroImg2 from '/src/assets/fruits/img/hero-img-2.jpg'; // 경로는 위치에 따라 조정
 import heroImg1 from '/src/assets/fruits/img/hero-img-1.png';
+import { useCart } from '../../contexts/CartContext';
 
 const Header = () => {
+
+  const  {  getTotalQuantity } = useCart();
+
   return (
     <>
       {/* Spinner Start */}
@@ -109,7 +113,7 @@ const Header = () => {
                     className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                     style={{ top: "-5px", left: 15, height: 20, minWidth: 20 }}
                   >
-                    3
+                    {getTotalQuantity}
                   </span>
                 </a>
                 <a href="#" className="my-auto">
