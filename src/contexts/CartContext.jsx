@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { getCarts } from "../api/CartApi";
+import { addCart, getCarts } from "../api/CartApi";
 
 //https://chatgpt.com/c/67ef7abf-2fbc-8007-be16-ed6e3f036f00
 
@@ -30,15 +30,15 @@ export const CartProvider = ({ children }) => {
   };
 
   // 장바구니에 추가
-  const addToCart = async (product) => {
+  const addToCart = async (product,qty=1) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/cart/", {
-        product_id: product.id,
-        quantity: 1,
-      });
-      loadCart(); // 추가 후 다시 불러오기
+      const response = await addCart(product.id, qty);
+      console.log(response)
+      
+      await loadCart(); // 장바구니 갱신
+      console.log("✅ 장바구니에 상품이 추가되었습니다.");
     } catch (error) {
-      console.error("❌ 장바구니 추가 실패", error);
+      console.error("❌ 장바구니 추가 실패:", error.response?.data || error.message);
     }
   };
 
@@ -52,8 +52,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const getTotalQuantity = () =>
-    cartItems.reduce((total, item) => total + item.quantity, 0);
+  const getTotalQuantity = () => {
+    cartItems.reduce((total, item) => total + item.quantity, 0)
+    console.log(cartItems)
+  };
 
   useEffect(() => {
     loadCart();

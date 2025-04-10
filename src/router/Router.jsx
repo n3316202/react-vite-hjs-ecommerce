@@ -1,7 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom'
 import MainLayout from '../ui/layouts/MainLayout'
-import Login from '@/ui/components/login/Login'
 import Products from '../ui/components/fruits/Products';
+import Cart from '../ui/components/fruits/Cart';
+import Hero from '../ui/components/Hero';
 
 
 const routes = [
@@ -11,9 +12,14 @@ const routes = [
     loader: () => '메인 레이아웃',
     children: [
       {
-        path: '',
-        element: <Products />,
+        path: '', // 기본 경로: / => Products
+        element: <div><Hero/><Products /></div>,
         loader: () => '상품들',
+      },
+      {
+        path: 'cart', // /cart => Cart
+        element: <Cart />,
+        loader: () => '카트',
       },
     ],
   },

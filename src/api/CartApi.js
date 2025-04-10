@@ -12,6 +12,10 @@ export const getCarts = () => {
   return http.get('/api/cart/');
 };
 
-// export const getProductById = (id) => {
-//   return http.get(`/api/product/${id}/`);
-// };
+// 장바구니에 상품 추가
+export const addCart = (product_id, quantity = 1) => {
+  return http.post("/api/cart/", {
+    product_id,
+    quantity,
+  });
+};

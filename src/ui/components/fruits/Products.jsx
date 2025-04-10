@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { getCategories } from '../../../api/categoryApi';
 import { getProducts } from '../../../api/productApi';
+import { useCart } from "@/contexts/CartContext"; // 경로는 프로젝트 구조에 맞게 수정
 
 const Products = () => {
+  
+  const { addToCart } = useCart();
+
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [products, setProducts] = useState([]);
@@ -110,13 +114,13 @@ const Products = () => {
                             <p className="text-dark fs-5 fw-bold mb-0">
                               ${product.price} / kg
                             </p>
-                            <a
-                              href="#"
+                            <button
+                              onClick={() => addToCart(product)}              
                               className="btn border border-secondary rounded-pill px-3 text-primary"
                             >
                               <i className="fa fa-shopping-bag me-2 text-primary" />{" "}
                               Add to cart
-                            </a>
+                            </button>
                           </div>
                         </div>
                       </div>
