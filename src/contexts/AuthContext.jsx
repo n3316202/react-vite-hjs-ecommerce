@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getCurrentUser, loginUser } from "../api/AuthApi";
+import { useCart } from "./CartContext";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -7,6 +8,11 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(localStorage.getItem("access"));
+
+  //dev_6
+  const { loadCart, clearCart } = useCart(); // ✅ 장바구니 불러오기 훅 가져오기
+
+  
 
   useEffect(() => {
     if (accessToken) {
@@ -35,6 +41,8 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(access);
 
       await getUser(); // 로그인 후 유저 정보 로드
+      //dev_6
+      await loadCart(); // ✅ 로그인 후 장바구니 즉시 불러오기!
     } catch (error) {
       console.error("❌ 로그인 실패", error);
       throw error;
@@ -46,6 +54,8 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(null);
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
+
+    clearCart(); // ✅ 장바구니 초기화 로그아웃시 카트 초기화(아이콘을 0 으로)
   };
 
   const value = {

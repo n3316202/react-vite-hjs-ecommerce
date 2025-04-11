@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { addCart, getCarts } from "../api/CartApi";
+import { addCart, deleteCart, getCarts } from "../api/CartApi";
 
 //https://chatgpt.com/c/67ef7abf-2fbc-8007-be16-ed6e3f036f00
 
@@ -43,12 +43,13 @@ export const CartProvider = ({ children }) => {
   };
 
   // 장바구니에서 제거
-  const removeFromCart = async (itemId) => {
+  const removeFromCart = async (productId) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/cart/${itemId}/`);
-      loadCart();
+      await deleteCart(productId);  // API 호출 (product_id를 body로 넘김)
+      await loadCart();             // 장바구니 다시 불러오기
+      console.log("✅ 상품이 장바구니에서 제거되었습니다.");
     } catch (error) {
-      console.error("❌ 삭제 실패", error);
+      console.error("❌ 삭제 실패", error.response?.data || error.message);
     }
   };
 
@@ -61,12 +62,18 @@ export const CartProvider = ({ children }) => {
     loadCart();
   }, []);
 
+  //dev_6
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   const value = {
     cartItems,
     addToCart,
     removeFromCart,
     loadCart,
     getTotalQuantity,
+    clearCart, //dev_6
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -6,12 +6,16 @@ import { useAuth } from '../../contexts/AuthContext';
 const Navbar = () => {
 
   const  { cartItems } = useCart();
-  console.log("로그")
-  console.log(cartItems)
+  //console.log("로그")
+  //console.log(cartItems)
 
-  const {user} = useAuth();
-  console.log("유저")
-  console.log(user)
+  const {user,logout } = useAuth();
+  //console.log("유저")
+  //console.log(user)
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+    if (user) logout();
+  };
 
   return (
     <>
@@ -35,10 +39,15 @@ const Navbar = () => {
                 </a>
               </small>
               <small className="me-3">
-                <i className="fas fa-envelope me-2 text-secondary" />
-                <a href="#" className="text-white">
-                {user ? `${user.username}님 환영합니다.` : '로그인을 해주세요'}
-                </a>
+              {user ? (
+                      <a href="#" className="text-white" onClick={handleLogoutClick}>
+                        {user.username}님 환영합니다.
+                      </a>
+                    ) : (
+                      <Link to="/login" className="text-white">
+                        로그인을 해주세요
+                      </Link>
+              )}
               </small>
             </div>
             <div className="top-link pe-2">
