@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useCart } from '../../../contexts/CartContext'
+import { formatCurrency } from '../../../utils/format'
 
 const CheckOut = () => {
   const [shippingData, setShippingData] = useState({
@@ -31,20 +32,51 @@ const CheckOut = () => {
   }
 
   //카트 가져오기
-  // {
-  //   "cart": [
-  //     {
-  //       "product": {...},
-  //       "quantity": 2,
-  //       "price": "15000.00",
-  //       "total_price": "30000.00"
-  //     },
-  //     ...
-  //   ],
-  //   "cart_total_items": 5,
-  //   "cart_total_price": "78000.00"
+  //   {
+  //     "cart": [
+  //         {
+  //             "product": {
+  //                 "id": 34,
+  //                 "name": "너를위한-스프링",
+  //                 "price": "10000.00",
+  //                 "description": "자바 책입니다.",
+  //                 "image": "/media/upload/product/%EC%8A%A4%ED%94%84%EB%A7%81.jpg",
+  //                 "is_sale": false,
+  //                 "sale_price": 0,
+  //                 "category": {
+  //                     "id": 4,
+  //                     "name": "도서"
+  //                 }
+  //             },
+  //             "quantity": 1,
+  //             "price": "10000.00",
+  //             "total_price": "10000.00"
+  //         },
+  //         {
+  //             "product": {
+  //                 "id": 33,
+  //                 "name": "너를위한-장고",
+  //                 "price": "12000.00",
+  //                 "description": "파이썬 책입니다.",
+  //                 "image": "/media/upload/product/%EC%9E%A5%EA%B3%A0%EB%B6%80%ED%83%81_l4SgUHx.jpg",
+  //                 "is_sale": false,
+  //                 "sale_price": 0,
+  //                 "category": {
+  //                     "id": 1,
+  //                     "name": "파이썬"
+  //                 }
+  //             },
+  //             "quantity": 1,
+  //             "price": "12000.00",
+  //             "total_price": "12000.00"
+  //         }
+  //     ],
+  //     "cart_total_items": 2,
+  //     "cart_total_price": "22000.00"
   // }
   const { cartItems, addToCart, removeFromCart } = useCart()
+  console.log('cartItems 👉', cartItems)
+  console.log(cartItems)
 
   return (
     <>
@@ -163,57 +195,25 @@ const CheckOut = () => {
                     </thead>
                     <tbody>
                       {cartItems &&
-                        cartItems.cart.map((item, index) => (
-                          <tr>
+                        cartItems?.cart?.map((item, index) => (
+                          <tr key={index}>
                             <th scope='row'>
                               <div className='d-flex align-items-center mt-2'>
                                 <img
-                                  src='img/vegetable-item-2.jpg'
+                                  src={`http://127.0.0.1:8000/${item.product.image}`}
                                   className='img-fluid rounded-circle'
                                   style={{ width: 90, height: 90 }}
                                   alt=''
                                 />
                               </div>
                             </th>
-                            <td className='py-5'>Awesome Brocoli</td>
-                            <td className='py-5'>$69.00</td>
-                            <td className='py-5'>2</td>
-                            <td className='py-5'>$138.00</td>
+                            <td className='py-5'>{item.product.name}</td>
+                            <td className='py-5'>{formatCurrency(item.product.price)}</td>
+                            <td className='py-5'>{item.quantity}</td>
+                            <td className='py-5'>{formatCurrency(item.total_price)}</td>
                           </tr>
                         ))}
 
-                      <tr>
-                        <th scope='row'>
-                          <div className='d-flex align-items-center mt-2'>
-                            <img
-                              src='img/vegetable-item-5.jpg'
-                              className='img-fluid rounded-circle'
-                              style={{ width: 90, height: 90 }}
-                              alt=''
-                            />
-                          </div>
-                        </th>
-                        <td className='py-5'>Potatoes</td>
-                        <td className='py-5'>$69.00</td>
-                        <td className='py-5'>2</td>
-                        <td className='py-5'>$138.00</td>
-                      </tr>
-                      <tr>
-                        <th scope='row'>
-                          <div className='d-flex align-items-center mt-2'>
-                            <img
-                              src='img/vegetable-item-3.png'
-                              className='img-fluid rounded-circle'
-                              style={{ width: 90, height: 90 }}
-                              alt=''
-                            />
-                          </div>
-                        </th>
-                        <td className='py-5'>Big Banana</td>
-                        <td className='py-5'>$69.00</td>
-                        <td className='py-5'>2</td>
-                        <td className='py-5'>$138.00</td>
-                      </tr>
                       <tr>
                         <th scope='row'></th>
                         <td className='py-5' />
@@ -223,7 +223,7 @@ const CheckOut = () => {
                         </td>
                         <td className='py-5'>
                           <div className='py-3 border-bottom border-top'>
-                            <p className='mb-0 text-dark'>$414.00</p>
+                            <p className='mb-0 text-dark'>{formatCurrency(cartItems.cart_total_price)}</p>
                           </div>
                         </td>
                       </tr>
@@ -280,7 +280,7 @@ const CheckOut = () => {
                         <td className='py-5' />
                         <td className='py-5'>
                           <div className='py-3 border-bottom border-top'>
-                            <p className='mb-0 text-dark'>$135.00</p>
+                            <p className='mb-0 text-dark'>{formatCurrency(cartItems.cart_total_price)}</p>
                           </div>
                         </td>
                       </tr>
