@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useCart } from '../../../contexts/CartContext'
 import { formatCurrency } from '../../../utils/format'
 import RequestPay from './RequestPay'
+import { useNavigate } from 'react-router-dom'
 
 const CheckOut = () => {
   const [shippingData, setShippingData] = useState({
@@ -32,15 +33,26 @@ const CheckOut = () => {
     setShippingData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const { cartItems } = useCart()
+  const { cartItems, clearCart } = useCart()
   console.log('cartItems 👉', cartItems)
   console.log(cartItems)
 
-  const handlePayment = () => {
-    console.log('핸들페이먼트')
-    console.log(shippingData)
-    RequestPay(shippingData, cartItems)
+  const navigate = useNavigate()
+
+  const handlePayment = async () => {
+    try {
+      const result = await RequestPay(shippingData, cartItems)
+
+      if (result) {
+        console.log('===============')
+        clearCart() // 장바구니 비우기
+        navigate('/') // 루트로 이동
+      }
+    } catch (err) {
+      console.error('결제 실패:', err)
+    }
   }
+
   return (
     <>
       <div className='container-fluid page-header py-5'>

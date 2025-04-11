@@ -64,7 +64,8 @@ export const CartProvider = ({ children }) => {
   }, [])
 
   //dev_6
-  const clearCart = () => {
+  const clearCart = async () => {
+    await deleteCart()
     setCartItems([])
   }
 
