@@ -4,6 +4,7 @@ import Products from '../ui/components/fruits/Products';
 import Cart from '../ui/components/fruits/Cart';
 import Hero from '../ui/components/Hero';
 import Login from '../ui/components/login/Login';
+import CheckOut from '../ui/components/payment/CheckOut';
 
 
 const routes = [
@@ -18,13 +19,18 @@ const routes = [
         loader: () => '상품들',
       },
       {
-        path: 'cart', // /cart => Cart
+        path: 'cart', //
         element: <Cart />,
         loader: () => '카트',
       },
       {
-        path: 'login', // /cart => Cart
+        path: 'login', // 
         element: <div><Hero/><Login /></div>,
+        loader: () => '로그인',
+      },
+      {
+        path: 'checkout', //dev_7
+        element: <div><CheckOut /></div>,
         loader: () => '로그인',
       },
     ],
