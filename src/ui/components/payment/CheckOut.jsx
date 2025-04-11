@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useCart } from '../../../contexts/CartContext'
 import { formatCurrency } from '../../../utils/format'
+import RequestPay from './RequestPay'
 
 const CheckOut = () => {
   const [shippingData, setShippingData] = useState({
@@ -31,53 +32,15 @@ const CheckOut = () => {
     setShippingData((prev) => ({ ...prev, [name]: value }))
   }
 
-  //카트 가져오기
-  //   {
-  //     "cart": [
-  //         {
-  //             "product": {
-  //                 "id": 34,
-  //                 "name": "너를위한-스프링",
-  //                 "price": "10000.00",
-  //                 "description": "자바 책입니다.",
-  //                 "image": "/media/upload/product/%EC%8A%A4%ED%94%84%EB%A7%81.jpg",
-  //                 "is_sale": false,
-  //                 "sale_price": 0,
-  //                 "category": {
-  //                     "id": 4,
-  //                     "name": "도서"
-  //                 }
-  //             },
-  //             "quantity": 1,
-  //             "price": "10000.00",
-  //             "total_price": "10000.00"
-  //         },
-  //         {
-  //             "product": {
-  //                 "id": 33,
-  //                 "name": "너를위한-장고",
-  //                 "price": "12000.00",
-  //                 "description": "파이썬 책입니다.",
-  //                 "image": "/media/upload/product/%EC%9E%A5%EA%B3%A0%EB%B6%80%ED%83%81_l4SgUHx.jpg",
-  //                 "is_sale": false,
-  //                 "sale_price": 0,
-  //                 "category": {
-  //                     "id": 1,
-  //                     "name": "파이썬"
-  //                 }
-  //             },
-  //             "quantity": 1,
-  //             "price": "12000.00",
-  //             "total_price": "12000.00"
-  //         }
-  //     ],
-  //     "cart_total_items": 2,
-  //     "cart_total_price": "22000.00"
-  // }
-  const { cartItems, addToCart, removeFromCart } = useCart()
+  const { cartItems } = useCart()
   console.log('cartItems 👉', cartItems)
   console.log(cartItems)
 
+  const handlePayment = () => {
+    console.log('핸들페이먼트')
+    console.log(shippingData)
+    RequestPay(shippingData, cartItems)
+  }
   return (
     <>
       <div className='container-fluid page-header py-5'>
@@ -356,8 +319,12 @@ const CheckOut = () => {
                   </div>
                 </div>
                 <div className='row g-4 text-center align-items-center justify-content-center pt-4'>
-                  <button type='button' className='btn border-secondary py-3 px-4 text-uppercase w-100 text-primary'>
-                    Place Order
+                  <button
+                    type='button'
+                    onClick={handlePayment}
+                    className='btn border-secondary py-3 px-4 text-uppercase w-100 text-primary'
+                  >
+                    카카오 페이
                   </button>
                 </div>
               </div>
