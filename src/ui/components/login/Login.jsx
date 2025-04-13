@@ -51,6 +51,10 @@ const Login = () => {
           localStorage.setItem('refresh_token', response.data.refresh)
 
           // 리다이렉트 등
+          //const response2 = await getCurrentUser()
+          //print('리스판스2')
+          //print(response2)
+          navigate('/') // ← 로그인 성공 후 홈으로 리다이렉트
         } catch (error) {
           console.error('카카오 로그인 실패:', error.response?.data || error)
         }
