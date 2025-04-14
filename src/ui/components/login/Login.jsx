@@ -3,9 +3,10 @@ import '/src/assets/login/css/login.css'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { getCurrentSocialUser } from '../../../api/AuthApi'
 
 const Login = () => {
-  const { login } = useAuth()
+  const { login, logout, getUser } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
@@ -46,14 +47,25 @@ const Login = () => {
           })
 
           console.log('로그인 성공:', response.data)
+
           // JWT 저장 및 로그인 상태 업데이트 등
-          localStorage.setItem('access_token', response.data.access)
-          localStorage.setItem('refresh_token', response.data.refresh)
+          localStorage.setItem('access', response.data.access)
+          localStorage.setItem('refresh', response.data.refresh)
 
           // 리다이렉트 등
-          //const response2 = await getCurrentUser()
-          //print('리스판스2')
-          //print(response2)
+          // 다양한 로직이 있을수 있음
+          //await logout()
+          //localStorage.removeItem('access')
+          //localStorage.removeItem('refresh')
+          //await login(response.data.user.username, response.data.user.email)
+
+          //await login('admin', '1234')
+          //await login('nqwrt@ymail.com', 'nqwrt@ymail.com')
+
+          getUser()
+          //const res = getCurrentSocialUser()
+          //console.log(res)
+
           navigate('/') // ← 로그인 성공 후 홈으로 리다이렉트
         } catch (error) {
           console.error('카카오 로그인 실패:', error.response?.data || error)

@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       console.log(response.data)
     } catch (error) {
       console.error('🙅 사용자 정보 불러오기 실패', error)
-      logout() // 토큰 만료되었을 경우
+      await logout() // 토큰 만료되었을 경우
     }
   }
 
@@ -48,13 +48,13 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null)
     setAccessToken(null)
     localStorage.removeItem('access')
     localStorage.removeItem('refresh')
 
-    clearCart() // ✅ 장바구니 초기화 로그아웃시 카트 초기화(아이콘을 0 으로)
+    await clearCart() // ✅ 장바구니 초기화 로그아웃시 카트 초기화(아이콘을 0 으로)
   }
 
   const value = {
@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
     accessToken,
     login,
     logout,
+    getUser,
     isAuthenticated: !!user,
   }
 
