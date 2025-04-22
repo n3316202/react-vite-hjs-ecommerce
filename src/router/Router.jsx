@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import MainPage from '../ui/pages/MainPage'
 
-
 const routes = [
   {
     path: '/',
